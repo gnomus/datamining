@@ -7,9 +7,10 @@
 
 import numpy 
 import random
+import sys
 
 # load data
-datafile = "clusters.dat"
+datafile = sys.argv[1]
 #datafile = "sphere.dat"
 data = numpy.loadtxt(datafile,delimiter=' ')
 dim_in = numpy.shape(data)[1]

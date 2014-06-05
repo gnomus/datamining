@@ -4,14 +4,24 @@
 # Do whatever you want.
 
 import numpy, scipy
+import Gnuplot
+import time
+import sys
+
+gp = Gnuplot.Gnuplot()
+
 
 # set parameters
-dim_a, dim_b = 5, 5                              # map sizes
+dim_a, dim_b = 44, 1                              # map sizes
 sigma = numpy.max([float(dim_a),float(dim_b)])   # initial map interaction range
 epsilon = 0.03                                   # learning step size
 
 # load data
-datafile = "triangle.dat"
+#if len(sys.argv) < 2:
+#    print 'Please specify input file'
+#    print 'python SOM.py <file>'
+#    sys.exit()
+datafile = sys.argv[1] 
 data = numpy.loadtxt(datafile,delimiter=' ')
 dim_in = numpy.shape(data)[1]
 num_data = numpy.shape(data)[0]
@@ -28,10 +38,9 @@ for j in range(dim_in):
         W[k,j] += numpy.random.uniform(numpy.min(data[:,j]),numpy.max(data[:,j]))
 
 # for small data sets, repeat all-over again
-for batch in range(1):
+for batch in range(10000):
     # iterate (one data point per iteration)
     for iter in range(num_data):
-
         # current data point
         x = data[iter]
 
@@ -59,53 +68,60 @@ for batch in range(1):
             print "sigma=", sigma, "winner=", winner, "x=", x
 
 
-# SOM finished - now visualise
-
-# write weights as 2D- or 3D-point coordinates for display with gnuplot
-f = open("out.dat", 'wb')
-for i in range(dim_a):
-    for k in range(dim_b):
-        for j in range(dim_in):
-            val_ch = str(W[i*dim_b+k,j]) + " "
-            f.write(val_ch)
-        f.write("\n")
-    f.write("\n")
-f.close()
-
-# write gnuplot commands to draw grid
-f = open("out.gnu", 'wb')
-for i in range(dim_a):
-    for k in range(dim_b-1):
-        val_string = "set arrow from "
-        for j in range(dim_in):
-            val_string += str(W[i*dim_b+k,j])
-            if j < dim_in - 1:
-                val_string += ", "
-        val_string += " to "
-        for j in range(dim_in):
-            val_string += str(W[i*dim_b+k+1,j])
-            if j < dim_in - 1:
-                val_string += ", "
-        val_string += " nohead\n"
-        f.write(val_string)
-for k in range(dim_b):
-    for i in range(dim_a-1):
-        val_string = "set arrow from "
-        for j in range(dim_in):
-            val_string += str(W[i*dim_b+k,j])
-            if j < dim_in - 1:
-                val_string += ", "
-        val_string += " to "
-        for j in range(dim_in):
-            val_string += str(W[(i+1)*dim_b+k,j])
-            if j < dim_in - 1:
-                val_string += ", "
-        val_string += " nohead\n"
-        f.write(val_string)
-val_string = "set arrow from "
-
-#f.write("set xrange [%f:%f]\nset yrange [%f:%f]\nset zrange [%f:%f]\n" % (numpy.min(W), numpy.max(W), numpy.min(W), numpy.max(W), numpy.min(W), numpy.max(W)))
-#f.write("set isosamples 2, 2\nsplot %f linestyle 0\n" % (numpy.min(W))) # splot brings the window to the screen (the set arrows command doesn't draw by itself)
-f.write("replot\n")
-f.close()
-
+            # SOM finished - now visualise
+            
+            # write weights as 2D- or 3D-point coordinates for display with gnuplot
+            f = open("out.dat", 'wb')
+            for i in range(dim_a):
+                for k in range(dim_b):
+                    for j in range(dim_in):
+                        val_ch = str(W[i*dim_b+k,j]) + " "
+                        f.write(val_ch)
+                    f.write("\n")
+                f.write("\n")
+            f.close()
+            
+            # write gnuplot commands to draw grid
+            f = open("out.gnu", 'wb')
+            for i in range(dim_a):
+                for k in range(dim_b-1):
+                    val_string = "set arrow from "
+                    for j in range(dim_in):
+                        val_string += str(W[i*dim_b+k,j])
+                        if j < dim_in - 1:
+                            val_string += ", "
+                    val_string += " to "
+                    for j in range(dim_in):
+                        val_string += str(W[i*dim_b+k+1,j])
+                        if j < dim_in - 1:
+                            val_string += ", "
+                    val_string += " nohead\n"
+                    f.write(val_string)
+            for k in range(dim_b):
+                for i in range(dim_a-1):
+                    val_string = "set arrow from "
+                    for j in range(dim_in):
+                        val_string += str(W[i*dim_b+k,j])
+                        if j < dim_in - 1:
+                            val_string += ", "
+                    val_string += " to "
+                    for j in range(dim_in):
+                        val_string += str(W[(i+1)*dim_b+k,j])
+                        if j < dim_in - 1:
+                            val_string += ", "
+                    val_string += " nohead\n"
+                    f.write(val_string)
+            val_string = "set arrow from "
+            
+            #f.write("set xrange [%f:%f]\nset yrange [%f:%f]\nset zrange [%f:%f]\n" % (numpy.min(W), numpy.max(W), numpy.min(W), numpy.max(W), numpy.min(W), numpy.max(W)))
+            #f.write("set isosamples 2, 2\nsplot %f linestyle 0\n" % (numpy.min(W))) # splot brings the window to the screen (the set arrows command doesn't draw by itself)
+            f.write("replot\n")
+            f.close()
+            gp.reset()
+            gp('plot "{0}", "out.dat"'.format(datafile))
+            gp('load "out.gnu"')
+try:
+    while 1:
+        time.sleep(1)
+except KeyboardInterrupt:
+    pass
