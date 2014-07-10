@@ -12,9 +12,9 @@ gp = Gnuplot.Gnuplot()
 
 
 # set parameters
-dim_a, dim_b = 44, 1                              # map sizes
+dim_a, dim_b = 200, 1                          # map sizes
 sigma = numpy.max([float(dim_a),float(dim_b)])   # initial map interaction range
-epsilon = 0.03                                   # learning step size
+epsilon = 0.1                                   # learning step size
 
 # load data
 #if len(sys.argv) < 2:
@@ -38,7 +38,7 @@ for j in range(dim_in):
         W[k,j] += numpy.random.uniform(numpy.min(data[:,j]),numpy.max(data[:,j]))
 
 # for small data sets, repeat all-over again
-for batch in range(10000):
+for batch in range(500):
     # iterate (one data point per iteration)
     for iter in range(num_data):
         # current data point
@@ -118,7 +118,7 @@ for batch in range(10000):
             f.write("replot\n")
             f.close()
             gp.reset()
-            gp('plot "{0}", "out.dat"'.format(datafile))
+            gp('{1} "{0}", "out.dat"'.format(datafile, sys.argv[2]))
             gp('load "out.gnu"')
 try:
     while 1:

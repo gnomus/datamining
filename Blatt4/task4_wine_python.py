@@ -72,11 +72,11 @@ print "Size test set: ", shape(test)[0]
 
 # Train the network
 from mlp_python import mlp
-net = mlp(shape(train)[1], shape(traint)[1], 13, 1.0, "linear")
+net = mlp(shape(train)[1], shape(traint)[1], 2, 1.0, "linear")
 
 #
 eta = 0.3
-epochs = 200
+epochs = 2000
 useValidationSet = True
 
 #

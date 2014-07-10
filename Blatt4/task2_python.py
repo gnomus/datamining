@@ -26,6 +26,7 @@ data_out = numpy.array([[0], [1], [1], [0]])
 size_in = numpy.shape(data_inp)[1]
 size_out = numpy.shape(data_out)[1]
 ndata = numpy.shape(data_inp)[0]
+
 if numpy.shape(data_out)[0] != ndata:
     print "data error!"
 
@@ -34,7 +35,7 @@ net = mlp(size_in, size_out, 2, 1.0, "linear")
 
 #
 eta = 0.3
-epochs = 600
+epochs = 100
 
 #
 for n in range(epochs):
